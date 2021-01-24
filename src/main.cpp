@@ -18,7 +18,7 @@ if (argc < 2) {
   }
 
 // Initialise GLFW
-  glewExperimental=true; // Needed for core profile
+glewExperimental=true; // Needed for core profile
   if( !glfwInit() ) {
     fprintf( stderr, "Failed to initialize GLFW\n" );
     return -1;
@@ -31,7 +31,7 @@ glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; sho
 glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
 
 
-Window::Window("PropManipulator", 1280, 720);
+//Window::Window("PropManipulator", 1280, 720);
 // Open a window and create its OpenGL context
 GLFWwindow* window; // (In the accompanying source code, this variable is global for simplicity)
 window = glfwCreateWindow( 1024, 768, "PropManipulator", NULL, NULL);

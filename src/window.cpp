@@ -1,15 +1,16 @@
 #include "window.h"
 
-Window::Window(const char* title, int width, int height){
-  w_Title = title;
+Window::Window(int width, int height, const char* title){
   w_Width = width;
   w_Height = height;
-
-  GLFWwindow* window;
-  window = glfwCreateWindow(w_Width, w_Height, w_Title, NULL, NULL);
-
+  w_Title = title;
+  return;
 }
 
 Window::~Window(){
 
+}
+
+void Window::createWindow(int w_Width, int w_Height, const char* w_Title){
+  GLFWwindow window = glfwCreateWindow(int w_Width, int w_Height, const char* w_Title, NULL, NULL); 
 }

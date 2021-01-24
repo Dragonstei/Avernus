@@ -1,8 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#endif
-
 // Include GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -14,12 +12,25 @@
 #include <glm/glm.hpp>
 using namespace glm;
 
-class Window{
-    public:
-    Window(const char* title, int width, int height);
-    ~Window();
-
-    private:
-    int w_Width, w_Height;
-    const char* w_Title;
+/*
+struct windowSettings{
+    int width = 0;
+    int height = 0;
+    const char* title;
 };
+*/
+class Window{
+    private:
+        int _width, _height;
+    public:
+        int w_Width, w_Height;
+        const char* w_Title;
+
+        Window(int width, int height, const char* title);
+        ~Window();
+
+        typedef struct GLFWwindow GLFWwindow;
+        void createWindow(int w_Width, int w_Height, const char* w_Title);
+    
+};
+#endif

@@ -35,6 +35,10 @@ if (NOT WIN32)
 endif (NOT WIN32)
 
 find_package (OpenGL REQUIRED)
+if(NOT OPENGL_FOUND)
+    message("ERROR: OpenGL not found")
+endif(NOT OPENGL_FOUND)
+
 
 #!!! "C:/GLFW/lib-mingw-w64" must be changed to "C:/GLFW/lib-mingw" if not using 64-bit version !!!
 if (WIN32)
@@ -42,7 +46,7 @@ if (WIN32)
   link_directories("C:/glew/lib/Release/x64" "C:/GLFW/lib-mingw-w64" )
 else (WIN32)
   find_package (glfw3 REQUIRED)
-  find_package (GLM REQUIRED)
+  find_package (glm REQUIRED)
   find_package (GLEW REQUIRED STATIC)
 endif (WIN32)
 
@@ -69,7 +73,10 @@ if (UNIX)
           ${OPENGL_LIBRARIES}
           ${GLFW3_LIBRARY}
           ${GLEW_LIBRARY}
-          Xxf86vm pthread Xrandr Xinerama Xi Xcursor)
+          GLEW glfw Xxf86vm pthread Xrandr Xinerama Xi Xcursor)
+  if(POLICY CMP0072)
+          cmake_policy(SET CMP0072 NEW)
+  endif()
 endif (UNIX)
 
 # Define the include DIRs
