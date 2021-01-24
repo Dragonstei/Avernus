@@ -1,0 +1,6 @@
+// The configured options and settings for PropManipulator
+
+#define ROOT_DIR "@CMAKE_SOURCE_DIR@/"
+
+#define PropManipulator_VERSION_MAJOR @PropManipulator_VERSION_MAJOR@
+#define PropManipulator_VERSION_MINOR @PropManipulator_VERSION_MINOR@
