@@ -7,6 +7,7 @@
 
 #include "settings.h"
 
+#include "shapes.h"
 #include "window.h"
 
 int main(int argc, char* argv[]) {
@@ -21,4 +22,17 @@ Window w;
 w.initWindow();
 w.createWindow(1280, 720, "PropManipulator");
 
+/* General pipeline
+while (windowOpen) {
+    while (event = newEvent())
+        handleEvent(event);
+
+    updateScene();
+
+    drawGraphics();
+    presentGraphics();
+}
+*/
+
+return 0;
 }
