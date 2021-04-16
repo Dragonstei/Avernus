@@ -39,7 +39,7 @@ if(NOT OPENGL_FOUND)
     message("ERROR: OpenGL not found")
 endif(NOT OPENGL_FOUND)
 
-
+# OS specific links
 #!!! "C:/GLFW/lib-mingw-w64" must be changed to "C:/GLFW/lib-mingw" if not using 64-bit version !!!
 if (WIN32)
   include_directories("C:/GLFW/include" "C:/glm" "C:/glew/include")
@@ -57,6 +57,17 @@ if (APPLE)
   find_library(COREVID_LIBRARY CoreVideo REQUIRED)
 endif (APPLE)
 
+if (UNIX)
+  target_link_libraries (PropManipulator
+          ${OPENGL_LIBRARIES}
+          ${GLFW3_LIBRARY}
+          ${GLEW_LIBRARY}
+          GLEW glfw Xxf86vm pthread Xrandr Xinerama Xi Xcursor)
+  if(POLICY CMP0072)
+          cmake_policy(SET CMP0072 NEW)
+  endif()
+endif (UNIX)
+
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
   target_link_libraries (PropManipulator
           ${GLFW3_LIBRARY}
@@ -68,16 +79,6 @@ if (WIN32)
           ${OPENGL_LIBRARIES} glew32s glfw3 glu32 opengl32)
 endif (WIN32)
 
-if (UNIX)
-  target_link_libraries (PropManipulator
-          ${OPENGL_LIBRARIES}
-          ${GLFW3_LIBRARY}
-          ${GLEW_LIBRARY}
-          GLEW glfw Xxf86vm pthread Xrandr Xinerama Xi Xcursor)
-  if(POLICY CMP0072)
-          cmake_policy(SET CMP0072 NEW)
-  endif()
-endif (UNIX)
 
 # Define the include DIRs
 include_directories("${CMAKE_SOURCE_DIR}/src"
