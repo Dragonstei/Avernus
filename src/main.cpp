@@ -1,25 +1,18 @@
-// OpenGL libraries
-#define GLEW_STATIC
-#include <GL/glew.h>
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include standard libraries
-#include <iostream>
+// Standard libraries
 #include <cmath>
 
-// Include project headers
+// OpenGL libraries
+#include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+// Project headers
+#include "filesystem.h"
 #include "settings.h"
 #include "shader.h"
-// #include "window.h"
 
-<<<<<<< HEAD
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
-=======
-#include "shapes.h"
-#include "window.h"
->>>>>>> f49474cdc56175d030606655ca60f464aaece22b
 
 // Settings
 const unsigned int SCR_WIDTH = 800;
@@ -33,25 +26,6 @@ const unsigned int SCR_HEIGHT = 600;
     door een lijst van input/output variabelen, uniforms
     en z'n main functie
 */
-// Vertex shader
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n" // Position has attribute position 0
-    "layout (location = 1) in vec3 aColor;\n"
-    "out vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n" // Giving a vec3 to vec4's constructor, homogenous coordinates 
-    "   ourColor = aColor;\n"
-    "}\0";
-
-// Fragment shader
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "in vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(ourColor, 1.0);\n"
-    "}\0";
 
 int main()
 {
@@ -68,7 +42,7 @@ int main()
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", nullptr, nullptr); // Windowed
     if (window == NULL) {
-        printf("Failed to create GLFW window");
+        std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
@@ -77,12 +51,11 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-        printf("Failed to initialize GLEW\n");
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    std::cout << "GLEW initialized" << std::endl;
 
     // OpenGL guarantees atleast 16 attributes available, some hardware may support more 
     int nrAttributes;
@@ -91,92 +64,24 @@ int main()
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
-// Setting up shaders
-// --------------------------------------------------
+    // Create shader
+    Shader shader("src/shaders/shader.vs", "src/shaders/shader.fs"); //!!! PATHS DON'T WORK
 
-    char infoLog[512];
-
-    // Vertex shader compile
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    // Compiling the shader into code that can be executed by the GPU
-    glCompileShader(vertexShader);
-    // Checking if shader compiled
-    GLint vertexStatus;
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertexStatus);
-    std::cout << "Vertex Shader compiler Status: " << vertexStatus << std::endl;
-
-    // Retrieving vertex shader compile log
-    if(!vertexStatus) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    // Fragment shader compile
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-
-    glCompileShader(fragmentShader);
-
-    GLint fragmentStatus;
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragmentStatus);
-    std::cout << "Fragment Shader compiler Status: " << fragmentStatus << std::endl;
-    if (!fragmentStatus)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-// --------------------------------------------------
-
-    // Combining shaders into program
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    // Linking the program
-    glLinkProgram(shaderProgram);
-    // Program status
-    GLint programStatus;
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &programStatus);
-    // Retrieving shader linking log
-    if(!programStatus) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-<<<<<<< HEAD
 // --------------------------------------------------
 
     float vertices[] = {
-        // positions            // colors
-         0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f, // bottom left
-         0.0f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f  // top
+        // Positions          // Colors           // Texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top left 
     };
 
-/*     // Vertices for triangle
-    float vertices[] = { // Vertices 1-3 (X, Y, Z=0.0)
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
-    }; */
+    unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
 
-/*     // Vertices for rectangle
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f, // top right
-         0.5f, -0.5f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f // top left
-    }; */
-
-/*     unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
-    }; */
-
-    // Vertex Buffer Object. Uploads the vertex data to the GPU
-    // Vertex Array Object
     GLuint VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -188,22 +93,82 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // Copy the vertices array in a vertex buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-   /*  // Copy the index array in an element buffer
+    // Copy the index array in an element buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); */
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Vertex Attribute Pointers
     // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3* sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3* sizeof(float)));
     glEnableVertexAttribArray(1);
+    // Texture Coordinates attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (6* sizeof(float)));
+    glEnableVertexAttribArray(2);
 
-    // Because glVertexAttribPointer called to the VBO, we can safely unbind it
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // Unbind VAO so other VAO calls won't accidentily modify this
-    glBindVertexArray(0);
+// Texture loading and creating
+// --------------------------------------------------
+    unsigned int texture1, texture2;
+
+    // Texture 1
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1); 
+
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Load image, create texture and generate mipmaps
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform
+    unsigned char *data = stbi_load(FileSystem::getPath("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    // Texture 2
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// Set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Load image, create texture and generate mipmaps
+    data = stbi_load(FileSystem::getPath("resources/textures/awesomeface.png").c_str(), &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    // Tell OpenGL for each sampler to which texture unit it belongs to (only has to be done once)
+    // -------------------------------------------------------------------------------------------
+    shader.use(); // Don't forget to activate/use the shader before setting uniforms
+    // Either set it manually like so:
+    glUniform1i(glGetUniformLocation(shader.ID, "texture1"), 0);
+    // Or set it via the texture class
+    shader.setInt("texture2", 1);
 
     // Wireframe mode
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -217,18 +182,17 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Bind textures to corresponding texture units
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+
         // Using the program
-        glUseProgram(shaderProgram);
+        shader.use();
         glBindVertexArray(VAO);
-
-// Changing green value over time
-/*         float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f); */
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        // glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Swap buffer and check IO events
         glfwSwapBuffers(window);
@@ -239,29 +203,9 @@ int main()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
 
     glfwTerminate();
     return 0;
-
-    //Window w;
-    //w.initWindow();
-    //w.createWindow(1280, 720, "PropManipulator");
-=======
-/* General pipeline
-while (windowOpen) {
-    while (event = newEvent())
-        handleEvent(event);
-
-    updateScene();
-
-    drawGraphics();
-    presentGraphics();
-}
-*/
-
-return 0;
->>>>>>> f49474cdc56175d030606655ca60f464aaece22b
 }
 
 void processInput(GLFWwindow *window)

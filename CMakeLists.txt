@@ -19,6 +19,7 @@ file(GLOB_RECURSE HEADER_FILES
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
 configure_file(src/helpers/settings.h.in settings.h)
+configure_file(src/helpers/root_directory.h.in root_directory.h)
 
 include_directories(${CMAKE_BINARY_DIR}/src)
 
@@ -42,12 +43,11 @@ endif(NOT OPENGL_FOUND)
 # OS specific links
 #!!! "C:/GLFW/lib-mingw-w64" must be changed to "C:/GLFW/lib-mingw" if not using 64-bit version !!!
 if (WIN32)
-  include_directories("C:/GLFW/include" "C:/glm" "C:/glew/include")
-  link_directories("C:/glew/lib/Release/x64" "C:/GLFW/lib-mingw-w64" )
+  include_directories("C:/GLFW/include" "C:/glm")
+  link_directories("C:/GLFW/lib-mingw-w64" )
 else (WIN32)
   find_package (glfw3 REQUIRED)
   find_package (glm REQUIRED)
-  find_package (GLEW REQUIRED STATIC)
 endif (WIN32)
 
 if (APPLE)
@@ -62,7 +62,7 @@ if (UNIX)
           ${OPENGL_LIBRARIES}
           ${GLFW3_LIBRARY}
           ${GLEW_LIBRARY}
-          GLEW glfw Xxf86vm pthread Xrandr Xinerama Xi Xcursor)
+          glfw Xxf86vm pthread Xrandr Xinerama Xi Xcursor)
   if(POLICY CMP0072)
           cmake_policy(SET CMP0072 NEW)
   endif()
@@ -72,17 +72,16 @@ add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
   target_link_libraries (PropManipulator
           ${GLFW3_LIBRARY}
           ${OPENGL_LIBRARIES}
-          ${GLEW_LIBRARY}
           ${COCOA_LIBRARY} ${COREVID_LIBRARY} ${IOKIT_LIBRARY})
 if (WIN32)
-  target_link_libraries (${PROJECT_NAME}
-          ${OPENGL_LIBRARIES} glew32s glfw3 glu32 opengl32)
+  target_link_libraries (${PROJECT_NAME} stdc++fs
+          ${OPENGL_LIBRARIES} glfw3 glu32 opengl32)
 endif (WIN32)
 
 
 # Define the include DIRs
 include_directories("${CMAKE_SOURCE_DIR}/src"
-	                "${CMAKE_SOURCE_DIR}/include"
+	                  "${CMAKE_SOURCE_DIR}/include"
                     )
 
 include(CPack)
