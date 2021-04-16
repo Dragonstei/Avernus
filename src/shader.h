@@ -3,6 +3,7 @@
 
 // OpenGL libraries
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 // Standard libraries
 #include <string>
@@ -28,20 +29,19 @@ public:
     // Vertex shader
     const char *vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n" // Position has attribute position 0
-        "layout (location = 1) in vec3 aColor;\n"
-        "layout (location = 2) in vec2 aTexCoord;\n"
-        "out vec3 color;\n"
-        "out vec2 TexCoord;"
+        "layout (location = 1) in vec2 aTexCoord;\n"
+        "out vec2 TexCoord;\n"
+        "uniform mat4 model;\n"
+        "uniform mat4 view;\n"
+        "uniform mat4 projection;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = transform * vec4(aPos, 1.0);\n" // Giving a vec3 to vec4's constructor, homogenous coordinates 
-        "   color = aColor;\n"
+        "   gl_Position = projection * view * model * vec4(aPos, 1.0);\n" // Giving a vec3 to vec4's constructor in homogenous coordinates 
         "   TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
         "}\0";
 
     // Fragment shader
     const char *fragmentShaderSource = "#version 330 core\n"
-        "in vec3 color;\n"
         "in vec2 TexCoord;\n"
         "out vec4 FragColor;\n"
         "uniform sampler2D texture1;\n"
@@ -154,6 +154,11 @@ public:
     void setFloat(const std::string &name, float value) const
     {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    }
+
+    void setMat4(const std::string &name, const glm::mat4 &mat) const
+    {
+        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 };
 

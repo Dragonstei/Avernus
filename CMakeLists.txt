@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(PropManipulator VERSION 0.5)
+project(Avernus VERSION 1.0)
 
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
@@ -58,7 +58,7 @@ if (APPLE)
 endif (APPLE)
 
 if (UNIX)
-  target_link_libraries (PropManipulator
+  target_link_libraries (Avernus
           ${OPENGL_LIBRARIES}
           ${GLFW3_LIBRARY}
           ${GLEW_LIBRARY}
@@ -69,7 +69,7 @@ if (UNIX)
 endif (UNIX)
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
-  target_link_libraries (PropManipulator
+  target_link_libraries (Avernus
           ${GLFW3_LIBRARY}
           ${OPENGL_LIBRARIES}
           ${COCOA_LIBRARY} ${COREVID_LIBRARY} ${IOKIT_LIBRARY})
@@ -86,6 +86,6 @@ include_directories("${CMAKE_SOURCE_DIR}/src"
 
 include(CPack)
 
-target_include_directories(PropManipulator PUBLIC
+target_include_directories(Avernus PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            )
