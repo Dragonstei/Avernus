@@ -13,8 +13,13 @@
 #include "shader.h"
 // #include "window.h"
 
+<<<<<<< HEAD
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+=======
+#include "shapes.h"
+#include "window.h"
+>>>>>>> f49474cdc56175d030606655ca60f464aaece22b
 
 // Settings
 const unsigned int SCR_WIDTH = 800;
@@ -140,6 +145,7 @@ int main()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+<<<<<<< HEAD
 // --------------------------------------------------
 
     float vertices[] = {
@@ -241,6 +247,21 @@ int main()
     //Window w;
     //w.initWindow();
     //w.createWindow(1280, 720, "PropManipulator");
+=======
+/* General pipeline
+while (windowOpen) {
+    while (event = newEvent())
+        handleEvent(event);
+
+    updateScene();
+
+    drawGraphics();
+    presentGraphics();
+}
+*/
+
+return 0;
+>>>>>>> f49474cdc56175d030606655ca60f464aaece22b
 }
 
 void processInput(GLFWwindow *window)
